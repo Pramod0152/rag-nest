@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { Inject } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 
 interface DocumentRequest {
   filename: string;
@@ -14,8 +14,18 @@ interface DocumentResponse {
   status: string;
 }
 
+interface QueryRequest {
+  query: string;
+}
+
+interface QueryResponse {
+  answer: string;
+  sources: string[];
+}
+
 interface RagServiceGrpc {
   uploadDocument(data: DocumentRequest): Observable<DocumentResponse>;
+  getAnswer(data: QueryRequest): Observable<QueryResponse>;
 }
 
 @Injectable()
@@ -31,5 +41,9 @@ export class RagService implements OnModuleInit {
   uploadDocument(item: any): Observable<DocumentResponse> {
     const text = this.ragService.uploadDocument(item);
     return text;
+  }
+
+  async getAnswer(query: string): Promise<QueryResponse> {
+    return firstValueFrom(this.ragService.getAnswer({ query }));
   }
 }

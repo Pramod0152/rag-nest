@@ -1,6 +1,8 @@
 import {
   Controller,
+  Get,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -19,5 +21,10 @@ export class RagController {
       filename: file.originalname,
       content: file.buffer,
     });
+  }
+
+  @Get('ask')
+  async ask(@Query('q') query: string): Promise<any> {
+    return this.ragService.getAnswer(query);
   }
 }
